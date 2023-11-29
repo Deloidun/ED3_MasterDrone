@@ -1,30 +1,25 @@
+#include <Arduino.h>
 #include <esp_now.h>
-#include <esp_wifi.h>
 #include <WiFi.h>
 
 #define POT_PIN 35      // Pin 35 attached to the potentiometer
 
 // MAC Address of the receiver - Slave ESP32
-uint8_t slaveAddress[] = {0xB0, 0xA7, 0x32, 0x16, 0x1E, 0x24};
-
-// New Master MAC
-uint8_t New_MAC_Address[] = {0x48, 0xE7, 0x29, 0x9F, 0xDD, 0xD4};
+uint8_t slaveAddress[] = {0x48, 0xE7, 0x29, 0x96, 0x77, 0x44};
 
 // PMK and LMK keys
 static const char* PMK_KEY_STR = "_A_H_L_T_T_T_ED3";
 static const char* LMK_KEY_STR = "_SON_DINH_VU_ED3";
 
-// unsigned long time_prev = 0; // Variable used for serial monitoring
-
 typedef struct {
 
-  int CtrlPWM;                 // Control Signal. Varies between [0 - 180]
+  int CtrlPWM;
 
   byte JSX;
   byte JSY;
  
-  byte button1;
-  byte button2;
+  byte leftButton;
+  byte rightButton;
 
 } Controller_Data;
 
@@ -43,7 +38,7 @@ int mapAndAdjustJoystickDeadBandValues(int value, bool reverse)
   }
   else if (value <= 1800)
   {
-    value = (value == 0 ? 0 : map(value, 1800, 0, 127, 0));  
+    value = (value == 0 ? 0 : map(value, 1800, 0, 127, 0));
   }
   else
   {
@@ -65,17 +60,12 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
   // Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery SUCCESS!" : "Delivery FAIL...");
 }
 
-void init_ESPNOW_Transmitter() 
+void init_ESPNOW_Transmitter()
 {
   Serial.begin(115200);
 
   // Set ESP32 as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
-
-	esp_wifi_set_ps(WIFI_PS_NONE);
-
-	// Change MAC
-  esp_wifi_set_mac(WIFI_IF_STA, New_MAC_Address);
 
   // Initialize ESP-NOW
   if (esp_now_init() != ESP_OK) 
@@ -91,16 +81,17 @@ void init_ESPNOW_Transmitter()
   esp_now_set_pmk((uint8_t *)PMK_KEY_STR);
 
   // Register peer
+  memset(&slavePeer, 0, sizeof(slavePeer));
   memcpy(slavePeer.peer_addr, slaveAddress, 6);
   slavePeer.channel = 0;
 
-		// ///*** Set the middle device's LMK ***///
-		// for (uint8_t i = 0; i < 16; i++)
-    // {
-    //   slavePeer.lmk[i] = LMK_KEY_STR[i];
-    // }
+		///*** Set the middle device's LMK ***///
+		for (uint8_t i = 0; i < 16; i++)
+    {
+      slavePeer.lmk[i] = LMK_KEY_STR[i];
+    }
 
-  slavePeer.encrypt = false;
+  slavePeer.encrypt = true;
   
   // Add peer        
   if (esp_now_add_peer(&slavePeer) != ESP_OK)
@@ -109,9 +100,9 @@ void init_ESPNOW_Transmitter()
     return;
   }
 
-  pinMode(12,INPUT_PULLUP);
-  pinMode(14,INPUT_PULLUP);
-  pinMode(35,INPUT);
+
+  pinMode(16,INPUT_PULLDOWN);
+  pinMode(17,INPUT_PULLDOWN);
   
 	// Register the callback for sent transmittedData
   esp_now_register_send_cb(OnDataSent);
@@ -119,15 +110,18 @@ void init_ESPNOW_Transmitter()
  
 void sendingData_throughESPNOW() 
 {
-  transmittedData.CtrlPWM = map(analogRead(POT_PIN), 0, 4095, 0, 180); // Read the pot, map the reading from [0, 4095] to [0, 180]
-  Serial.printf("%3d \n", transmittedData.CtrlPWM);
+  transmittedData.CtrlPWM = map(analogRead(POT_PIN), 0, 4095, 0, 180);  // Read the pot, map the reading from [0, 4095] to [0, 180]
+  Serial.println(transmittedData.CtrlPWM);
 
-  transmittedData.JSX    = mapAndAdjustJoystickDeadBandValues(analogRead(32), false);
-  transmittedData.JSY    = mapAndAdjustJoystickDeadBandValues(analogRead(33), false);
+  transmittedData.JSX = mapAndAdjustJoystickDeadBandValues(analogRead(32), false);
+  transmittedData.JSY = mapAndAdjustJoystickDeadBandValues(analogRead(33), true);
 
-  transmittedData.button1   = digitalRead(12);
-  transmittedData.button2   = digitalRead(14);
-  
+  transmittedData.leftButton = digitalRead(16);
+  transmittedData.rightButton = digitalRead(17);
+  Serial.println(transmittedData.leftButton);
+  Serial.println(transmittedData.rightButton);
+
+
   esp_err_t result = esp_now_send(slaveAddress, (uint8_t *) &transmittedData, sizeof(transmittedData));
   if (result == ESP_OK) 
   {
@@ -136,9 +130,7 @@ void sendingData_throughESPNOW()
   else 
   {
     Serial.println("Error sending the transmittedData");
-  }    
-  
-  delay(500);
+  }
 }
 
 // void SerialDataPrint()
