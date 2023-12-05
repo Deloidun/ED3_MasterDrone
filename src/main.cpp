@@ -9,6 +9,8 @@ void setup()
 
 void loop()
 {
-  // Sending UART data from Middle to Slave
+  // Sending UART data from Master to Slave
   sendingData_throughESPNOW();
+  // Print message to show value
+  debug();
 }
