@@ -49,7 +49,7 @@ int mapAndAdjustJoystickDeadBandValues(int value, bool reverse)
   {
     value = 254 - value;
   }
-  Serial.println(value);  
+  // Serial.println(value);
   return value;
 }
 
@@ -111,33 +111,41 @@ void init_ESPNOW_Transmitter()
 void sendingData_throughESPNOW() 
 {
   transmittedData.CtrlPWM = map(analogRead(POT_PIN), 0, 4095, 0, 180);  // Read the pot, map the reading from [0, 4095] to [0, 180]
-  Serial.println(transmittedData.CtrlPWM);
+  // Serial.println(transmittedData.CtrlPWM);
 
   transmittedData.JSX = mapAndAdjustJoystickDeadBandValues(analogRead(32), false);
   transmittedData.JSY = mapAndAdjustJoystickDeadBandValues(analogRead(33), true);
 
-  transmittedData.leftButton = digitalRead(16);
-  transmittedData.rightButton = digitalRead(17);
-  Serial.println(transmittedData.leftButton);
-  Serial.println(transmittedData.rightButton);
+  transmittedData.leftButton = digitalRead(17);
+  transmittedData.rightButton = digitalRead(16);
+  // Serial.println(transmittedData.leftButton);
+  // Serial.println(transmittedData.rightButton);
 
 
   esp_err_t result = esp_now_send(slaveAddress, (uint8_t *) &transmittedData, sizeof(transmittedData));
   if (result == ESP_OK) 
   {
-    Serial.println("Sent with success");
+    // Serial.println("Sent with success");
   }
-  else 
-  {
-    Serial.println("Error sending the transmittedData");
-  }
+  // else 
+  // {
+  //   Serial.println("Error sending the transmittedData");
+  // }
 }
 
+void debug()
+{
+  Serial.print("[ ");
+  Serial.printf("P: %3d, X: %3d, Y: %3d, LB: %3d, RB: %3d",
+  transmittedData.CtrlPWM, transmittedData.JSX, transmittedData.JSY,
+  transmittedData.leftButton, transmittedData.rightButton);
+  Serial.print(" ]\n");
+}
 // void SerialDataPrint()
 // {
 //   if (micros() - time_prev >= 20000)
 //   {
-//     time_prev = micros();
+//     time_prev = micros();-
 //     Serial.print(millis());
 //     Serial.print("\t");
 //     Serial.println(transmittedData.CtrlPWM);
