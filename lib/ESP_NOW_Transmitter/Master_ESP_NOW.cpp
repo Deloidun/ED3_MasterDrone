@@ -26,6 +26,26 @@ typedef struct {
 // Create a structured object
 Controller_Data transmittedData;
 
+///////////////////////////////////////////
+float timeCount;
+float Roll;
+float Pitch;
+float Altitude;
+
+typedef struct {
+
+  float time;
+
+  float k_angle_roll;
+  float k_angle_pitch;
+  float k_altitude;
+
+} Sensor_Data;
+
+// Create a structured object
+Sensor_Data receivedData;
+////////////////////////////////////////////
+
 //This function is used to map 0-4095 joystick value to 0-254. hence 127 is the center value which we send.
 //It also adjust the deadband in joystick.
 //Joystick values range from 0-4095. But its center value is not always 2047. It is little different.
@@ -58,6 +78,15 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 {
 	// Serial.print("\r\nLast Packet Send Status:\t");
   // Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery SUCCESS!" : "Delivery FAIL...");
+}
+
+// Callback function called when data is received
+void OnDataRecv(const uint8_t * mac, const uint8_t * incomingData, int len){
+  memcpy(&receivedData, incomingData, sizeof(receivedData));
+  timeCount = receivedData.time;
+  Roll = receivedData.k_angle_roll;
+  Pitch = receivedData.k_angle_pitch;
+  Altitude = receivedData.k_altitude;
 }
 
 void init_ESPNOW_Transmitter()
@@ -106,6 +135,7 @@ void init_ESPNOW_Transmitter()
   
 	// Register the callback for sent transmittedData
   esp_now_register_send_cb(OnDataSent);
+  esp_now_register_recv_cb(OnDataRecv);
 }
  
 void sendingData_throughESPNOW() 
@@ -123,7 +153,7 @@ void sendingData_throughESPNOW()
 
 
   esp_err_t result = esp_now_send(slaveAddress, (uint8_t *) &transmittedData, sizeof(transmittedData));
-  if (result == ESP_OK) 
+  if (result == ESP_OK)
   {
     // Serial.println("Sent with success");
   }
@@ -139,6 +169,11 @@ void debug()
   Serial.printf("P: %3d, X: %3d, Y: %3d, LB: %3d, RB: %3d",
   transmittedData.CtrlPWM, transmittedData.JSX, transmittedData.JSY,
   transmittedData.leftButton, transmittedData.rightButton);
+  Serial.print(" ]\t");
+
+  Serial.print("[ ");
+  Serial.printf("Time: %.3f, Roll: %.3f, Pitch: %.3f, Altitude: %.3f",
+  timeCount, Roll, Pitch, Altitude);
   Serial.print(" ]\n");
 }
 // void SerialDataPrint()
