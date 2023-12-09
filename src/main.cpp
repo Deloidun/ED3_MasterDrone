@@ -15,4 +15,5 @@ void loop()
   // Sending UART data from Middle to Slave
   DrawMrSonBitMap(); //Draw Mr Son
   sendingData_throughESPNOW();
+  debug();
 }
