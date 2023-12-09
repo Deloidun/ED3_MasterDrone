@@ -27,18 +27,17 @@ typedef struct {
 Controller_Data transmittedData;
 
 ///////////////////////////////////////////
-float timeCount;
+float TimeCount;
+float voltage;
 float Roll;
 float Pitch;
-float Altitude;
 
 typedef struct {
 
   float time;
-
+  float V;
   float k_angle_roll;
   float k_angle_pitch;
-  float k_altitude;
 
 } Sensor_Data;
 
@@ -83,10 +82,11 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 // Callback function called when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t * incomingData, int len){
   memcpy(&receivedData, incomingData, sizeof(receivedData));
-  timeCount = receivedData.time;
+
+  TimeCount = receivedData.time;
+  voltage = receivedData.V;
   Roll = receivedData.k_angle_roll;
   Pitch = receivedData.k_angle_pitch;
-  Altitude = receivedData.k_altitude;
 }
 
 void init_ESPNOW_Transmitter()
@@ -173,7 +173,7 @@ void debug()
 
   Serial.print("[ ");
   Serial.printf("Time: %.3f, Roll: %.3f, Pitch: %.3f, Altitude: %.3f",
-  timeCount, Roll, Pitch, Altitude);
+  TimeCount, voltage, Roll, Pitch);
   Serial.print(" ]\n");
 }
 // void SerialDataPrint()
