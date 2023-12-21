@@ -3,3 +3,4 @@
 void init_ESPNOW_Transmitter();
 void sendingData_throughESPNOW();
 void debug();
+void SerialDataWrite();

@@ -11,6 +11,14 @@ uint8_t slaveAddress[] = {0x48, 0xE7, 0x29, 0x96, 0x77, 0x44};
 static const char* PMK_KEY_STR = "_A_H_L_T_T_T_ED3";
 static const char* LMK_KEY_STR = "_SON_DINH_VU_ED3";
 
+float PRate;
+float IRate;
+float DRate;
+
+float PAngle;
+float IAngle;
+float DAngle;
+
 typedef struct {
 
   int CtrlPWM;
@@ -20,6 +28,14 @@ typedef struct {
  
   byte leftButton;
   byte rightButton;
+
+  float PR;
+  float IR;
+  float DR;
+
+  float PA;
+  float IA;
+  float DA;
 
 } Controller_Data;
 
@@ -44,6 +60,64 @@ typedef struct {
 // Create a structured object
 Sensor_Data receivedData;
 ////////////////////////////////////////////
+
+void SerialDataWrite()
+{
+  static String received_chars;
+  while (Serial.available())
+  {
+    char inChar = (char)Serial.read();
+    received_chars += inChar;
+    if (inChar == '\n')
+    {
+      switch (received_chars[0])
+      {
+        case 'p':
+          {
+            received_chars.remove(0, 1);
+            PRate = received_chars.toFloat();
+            break;
+          }
+        case 'i':
+          {
+            received_chars.remove(0, 1);
+            IRate = received_chars.toFloat();
+            break;
+          }
+        case 'd':
+          {
+            received_chars.remove(0, 1);
+            DRate = received_chars.toFloat();
+            break;
+          }
+        case 'P':
+          {
+            received_chars.remove(0, 1);
+            PAngle = received_chars.toFloat();
+            break;
+          }
+        case 'I':
+          {
+            received_chars.remove(0, 1);
+            IAngle = received_chars.toFloat();
+            break;
+          }
+        case 'D':
+          {
+            received_chars.remove(0, 1);
+            DAngle = received_chars.toFloat();
+            break;
+          }
+        // case 's':
+        //   received_chars.remove(0, 1);
+        //   float anglex_setpoint = received_chars.toFloat();
+        default:
+          break;
+      }
+      received_chars = "";
+    }
+  }
+}
 
 //This function is used to map 0-4095 joystick value to 0-254. hence 127 is the center value which we send.
 //It also adjust the deadband in joystick.
@@ -151,6 +225,13 @@ void sendingData_throughESPNOW()
   // Serial.println(transmittedData.leftButton);
   // Serial.println(transmittedData.rightButton);
 
+  transmittedData.PR = PRate;
+  transmittedData.IR = IRate;
+  transmittedData.DR = DRate;
+
+  transmittedData.PA = PAngle;
+  transmittedData.IA = IAngle;
+  transmittedData.DA = DAngle;
 
   esp_err_t result = esp_now_send(slaveAddress, (uint8_t *) &transmittedData, sizeof(transmittedData));
   if (result == ESP_OK)
@@ -165,16 +246,22 @@ void sendingData_throughESPNOW()
 
 void debug()
 {
-  Serial.print("[ ");
-  Serial.printf("P: %3d, X: %3d, Y: %3d, LB: %3d, RB: %3d",
-  transmittedData.CtrlPWM, transmittedData.JSX, transmittedData.JSY,
-  transmittedData.leftButton, transmittedData.rightButton);
-  Serial.print(" ]\t");
+  // Serial.print("[ ");
+  // Serial.printf("P: %3d, X: %3d, Y: %3d, LB: %3d, RB: %3d",
+  // transmittedData.CtrlPWM, transmittedData.JSX, transmittedData.JSY,
+  // transmittedData.leftButton, transmittedData.rightButton);
+  // Serial.print(" ]\t");
+
+  // Serial.print("[ ");
+  // Serial.printf("Time: %.3f, Roll: %.3f, Pitch: %.3f, Altitude: %.3f",
+  // TimeCount, voltage, Roll, Pitch);
+  // Serial.print(" ]\n");
 
   Serial.print("[ ");
-  Serial.printf("Time: %.3f, Roll: %.3f, Pitch: %.3f, Altitude: %.3f",
-  TimeCount, voltage, Roll, Pitch);
-  Serial.print(" ]\n");
+  Serial.printf("PR: %.6d, IR: %.6d, DR: %.6d, PA: %.6d, IA: %.6d, DA: %.6d",
+  transmittedData.PR, transmittedData.IR, transmittedData.DR,
+  transmittedData.PA, transmittedData.IA, transmittedData.DA);
+  Serial.print(" ]\t");
 }
 // void SerialDataPrint()
 // {
