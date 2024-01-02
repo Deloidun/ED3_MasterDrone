@@ -34,10 +34,11 @@ void DisplayDroneAngle(){
 }
 
 void PercentDroneBattery(){
-    display.setTextSize(4);
+    display.setTextSize(3);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(1,1);
     display.printf("\n%.2f", VoltageValue);
+    display.printf("V");
     display.display();
 }
 

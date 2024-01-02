@@ -5,40 +5,43 @@
 //DECLARATION
 ///////////////////////////////////////////////////////////////////
 uint8_t SlaveMacAddress[] = {0x48, 0xE7, 0x29, 0x96, 0x77, 0x44}; //MAC address of slave ESP32
-uint8_t NewMasterMacAddress[] = {0x48, 0xE7, 0x29, 0x9F, 0xDD, 0xD4}; //Install new MAC address to master ESP32
+uint8_t NewMasterMacAddress[] = {0x48, 0xE7, 0x29, 0x9F, 0x3F, 0x44}; //Install new MAC address to master ESP32
 
 unsigned long time_prev = 0;
 
-float PRate = 1, IRate = 1, DRate = 2; //PID gains of Rate
-float PAngle = 3, IAngle = 4, DAngle = 5; //PID gains of Angle
+// float PRate = 1, IRate = 1, DRate = 2; //PID gains of Rate
+// float PAngle = 3, IAngle = 4, DAngle = 5; //PID gains of Angle
 
 float KalmanAngleRoll, KalmanAnglePitch;
 float VoltageValue;
-static const char* PMK_KEY_STRING = "DO_B_A_O_L_O_N_G";
+float Timer = 0;
+
+static const char* PMK_KEY_STRING = "_A_H_L_T_T_T_ED3";
 static const char* LMK_KEY_STRING = "_SON_DINH_VU_ED3";
 
 
 ///////////////////////////////////////////////////////////////////
 //CREATE STRUCT AND OBJECT
 ///////////////////////////////////////////////////////////////////
-typedef struct {
-    float PR; //PRate
-    float IR;
-    float DR;
+// typedef struct {
+//     float PR; //PRate
+//     float IR;
+//     float DR;
 
-    float PA; //PAngle
-    float IA;
-    float DA;
-} PID_Data;
+//     float PA; //PAngle
+//     float IA;
+//     float DA;
+// } PID_Data;
 
 typedef struct {
+    float Time;
     float Volt;
     float K_Angle_Roll;
     float K_Angle_Pitch;
 } Sensor_Data;
 
 //CREATE STRUCTURED OBJECTS
-PID_Data Transmitted_PID_Data;
+// PID_Data Transmitted_PID_Data;
 Sensor_Data Received_Sensor_Data;
 
 
@@ -69,6 +72,7 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t Status){
 //CALLBACK FUNCTION CALLED WHEN DATA IS RECEIVED
 void OnDataRecv(const uint8_t * mac, const uint8_t * IncomingData, int Len){
     memcpy (&Received_Sensor_Data, IncomingData, sizeof (Received_Sensor_Data));
+    Timer = Received_Sensor_Data.Time;
     VoltageValue = Received_Sensor_Data.Volt;
     KalmanAngleRoll = Received_Sensor_Data.K_Angle_Roll;
     KalmanAnglePitch = Received_Sensor_Data.K_Angle_Pitch;
@@ -127,15 +131,15 @@ void EmbedControllerData(){
 
 
 //ASSIGN PID VALUES TO BE SENT
-void EmbedPIDData(){
-    Transmitted_PID_Data.PR = PRate;
-    Transmitted_PID_Data.IR = IRate;
-    Transmitted_PID_Data.DR = DRate;
+// void EmbedPIDData(){
+//     Transmitted_PID_Data.PR = PRate;
+//     Transmitted_PID_Data.IR = IRate;
+//     Transmitted_PID_Data.DR = DRate;
 
-    Transmitted_PID_Data.PA = PAngle;
-    Transmitted_PID_Data.IA = IAngle;
-    Transmitted_PID_Data.DA = DAngle;
-}
+//     Transmitted_PID_Data.PA = PAngle;
+//     Transmitted_PID_Data.IA = IAngle;
+//     Transmitted_PID_Data.DA = DAngle;
+// }
 
 
 //SEND THE PS5 CONTROLLER DATA THROUGH ESPNOW
@@ -147,13 +151,13 @@ void SendingPS5Data_Through_ESPNOW(){
 }
 
 
-//SENDING PID VALUES THROUGH ESPNOW
-void SendingPIDData_Through_ESPNOW(){
-    EmbedPIDData();
-    esp_err_t myResult2 = esp_now_send(SlaveMacAddress, (uint8_t *) &Transmitted_PID_Data, sizeof(Transmitted_PID_Data));
-    if (myResult2 = ESP_OK){
-    }
-}
+// //SENDING PID VALUES THROUGH ESPNOW
+// void SendingPIDData_Through_ESPNOW(){
+//     EmbedPIDData();
+//     esp_err_t myResult2 = esp_now_send(SlaveMacAddress, (uint8_t *) &Transmitted_PID_Data, sizeof(Transmitted_PID_Data));
+//     if (myResult2 = ESP_OK){
+//     }
+// }
 
 
 ///////////////////////////////////////////////////////////////////

@@ -28,7 +28,7 @@ void Reading_Button(){
             ButtonState = Reading;
 
             //Cycle through display modes
-            DisplayMode = (DisplayMode + 1) % 4;
+            DisplayMode = (DisplayMode + 1) % 3;
             ModeChanged = true;
         }
         ButtonState = Reading;
@@ -38,25 +38,22 @@ void Reading_Button(){
 
 void Switch_Case(){
     switch(DisplayMode){
+    // case 0:
+    //     if (ModeChanged){
+    //         DisplayControllerBattery();
+    //         ModeChanged = false; //Reset the flag after updating
+    //     }
+    //     break;
+
     case 0:
-        if (ModeChanged){
-            DisplayControllerBattery();
-            ModeChanged = false; //Reset the flag after updating
-        }
+        DisplayDroneBattery();
         break;
 
     case 1:
-        if (ModeChanged){
-            DisplayDroneBattery();
-            ModeChanged = false; //Reset the flag after updating
-        }
-        break;
-
-    case 2:
         DisplayDroneAngle();
         break;
 
-    case 3:
+    case 2:
         DisplayThrottle();
         break;
     }
