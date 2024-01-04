@@ -2,6 +2,7 @@
 #include <mySerial.h>
 #include <mySSD1306.h>
 #include <Master_Sender.h>
+#include <Voltage_Sensor.h>
 
 void setup(){
   Initialize_Serial();
@@ -11,6 +12,7 @@ void setup(){
 }
 
 void loop(){
+  voltage_sensor();
   Reading_Button();
   Switch_Case();
   SendingPS5Data_Through_ESPNOW();

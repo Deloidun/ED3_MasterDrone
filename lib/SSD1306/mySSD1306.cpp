@@ -1,5 +1,6 @@
 #include <mySSD1306.h>
 #include <Master_Sender.h>
+#include <Voltage_Sensor.h>
 
 Adafruit_SSD1306 display (SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 PS5_Data Transmitted_PS5_Data;
@@ -43,11 +44,12 @@ void PercentDroneBattery(){
 }
 
 
+
 void PercentControllerBattery(){ 
-    display.setTextSize(4);
+    display.setTextSize(3);
     display.setTextColor(SSD1306_WHITE);
-    display.setCursor(1,1);
-    display.print(F("\n31%"));
+    display.setCursor(0,0);
+    display.printf("\n%.2f", In_Voltage);
     display.display();
 }
 
@@ -94,3 +96,4 @@ void DisplayThrottle(){
     display.display();
     PWM_Value();
 }
+

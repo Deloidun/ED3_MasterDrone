@@ -28,7 +28,7 @@ void Reading_Button(){
             ButtonState = Reading;
 
             //Cycle through display modes
-            DisplayMode = (DisplayMode + 1) % 3;
+            DisplayMode = (DisplayMode + 1) % 4;
             ModeChanged = true;
         }
         ButtonState = Reading;
@@ -55,6 +55,10 @@ void Switch_Case(){
 
     case 2:
         DisplayThrottle();
+        break;
+
+    case 3:
+        DisplayControllerBattery();
         break;
     }
 }
