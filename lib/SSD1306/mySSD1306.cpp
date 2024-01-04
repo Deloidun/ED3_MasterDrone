@@ -3,9 +3,6 @@
 #include <Voltage_Sensor.h>
 
 Adafruit_SSD1306 display (SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-PS5_Data Transmitted_PS5_Data;
-
-int PWMValue = Transmitted_PS5_Data.Potentionmeter_PWM;
 
 void Initialize_SSD1306(){
     if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)){ //SSD1306_SWITCHAPVCC = generate display voltage from 3.3V internally
@@ -82,7 +79,7 @@ void PWM_Value(){
     display.setTextSize(4);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
-    display.printf("\n%.3d", Transmitted_PS5_Data.Potentionmeter_PWM);
+    display.printf("\n%.3d", P);
     display.display();
 }
 
