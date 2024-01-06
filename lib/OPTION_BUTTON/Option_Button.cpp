@@ -65,8 +65,6 @@ void Switch_Case(){
 
 
 
-
-
 // void Reading_Button(){
 //     int Reading = digitalRead(ButtonPin); //Read the state of the button into a local variable
     

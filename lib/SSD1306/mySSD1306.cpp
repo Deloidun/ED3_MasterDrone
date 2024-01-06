@@ -47,6 +47,7 @@ void PercentControllerBattery(){
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0,0);
     display.printf("\n%.2f", In_Voltage);
+    display.printf("V");
     display.display();
 }
 

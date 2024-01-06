@@ -1,5 +1,9 @@
 #include <Master_Sender.h>
 #include <Option_Button.h>
+#include <Preferences.h>
+
+
+Preferences preferences;
 
 ///////////////////////////////////////////////////////////////////
 //DECLARATION
@@ -12,13 +16,29 @@ unsigned long time_prev = 0;
 // float PRate = 1, IRate = 1, DRate = 2; //PID gains of Rate
 // float PAngle = 3, IAngle = 4, DAngle = 5; //PID gains of Angle
 
-float PRate = 0;
-float IRate = 0;
-float DRate = 0;
+float PRate;
+float IRate;
+float DRate;
 
-float PAngle = 0;
-float IAngle = 0;
-float DAngle = 0;
+float PAngle;
+float IAngle;
+float DAngle;
+
+// float Default_PRate;
+// float Default_IRate;
+// float Default_DRate;
+
+// float Default_PAngle;
+// float Default_IAngle;
+// float Default_DAngle;
+
+// float Saved_PRate;
+// float Saved_IRate;
+// float Saved_DRate;
+// float Saved_PAngle;
+// float Saved_IAngle;
+// float Saved_DAngle;
+
 
 int P;
 float KalmanAngleRoll, KalmanAnglePitch;
@@ -60,6 +80,21 @@ typedef struct {
 //CREATE STRUCTURED OBJECTS
 Sensor_Data Received_Sensor_Data;
 
+
+//INITIALIZE NVS
+// void Initialize_NVS(){
+//     preferences.begin("pid", false); //PID is the namespace for PID values
+//     //Load the saved PID values or set to default if not save
+//     PRate = preferences.getFloat("PRate", Default_PRate);
+//     IRate = preferences.getFloat("IRate", Default_IRate);
+//     DRate = preferences.getFloat("DRate", Default_DRate);
+//     PAngle = preferences.getFloat("PAngle", Default_PAngle);
+//     IAngle = preferences.getFloat("IAngle", Default_IAngle);
+//     DAngle = preferences.getFloat("DAngle", Default_DAngle);
+// }
+
+
+
 void SerialDataWrite()
 {
   static String received_chars;
@@ -71,6 +106,16 @@ void SerialDataWrite()
     {
       switch (received_chars[0])
       {
+        // case 's': //Save the current PID gains
+        //     Serial.println("Saving PID gains");
+        //     preferences.putFloat("PRate", PRate);
+        //     preferences.putFloat("IRate", IRate);
+        //     preferences.putFloat("DRate", DRate);
+        //     preferences.putFloat("PAngle", PAngle);
+        //     preferences.putFloat("IAngle", IAngle);
+        //     preferences.putFloat("DAngle", DAngle);
+        //     Serial.println("PID Saved");
+        //     break;
         case 'p':
             received_chars.remove(0, 1);
             PRate = received_chars.toFloat();
@@ -95,17 +140,44 @@ void SerialDataWrite()
             received_chars.remove(0, 1);
             DAngle = received_chars.toFloat();
             break;
-        // case 's':
-        //   received_chars.remove(0, 1);
-        //   float anglex_setpoint = received_chars.toFloat();
+
+        case 'l': //lock I gains
+            IRate = IAngle = 0;
+            break;
+
+        case 'r':
+            PRate = IRate = DRate = PAngle = IAngle = DAngle = 0;
+            break;
+
+        case 's': //Save PID gains
+            // PRate = 0.18;
+            // IRate = 0;
+            // DRate = 0.02;
+            
+            // PAngle = 6.4;
+            // IAngle = 5;
+            // DAngle = 0;
+
+            PRate = 0.18;
+            IRate = 0;
+            DRate = 0.02;
+            
+            PAngle = 5.5;
+            IAngle = 1.56;
+            DAngle = 0;
+            break;
+
         default:
-          break;
+        break;
       }
       received_chars = "";
     }
   }
 }
 
+void Stop_NVS(){
+    preferences.end();
+}
 
 ///////////////////////////////////////////////////////////////////
 //CREATE FUNCTIONS
@@ -221,13 +293,13 @@ void SendingPS5Data_Through_ESPNOW()
 //PRINTING FOR DEBUGING
 ///////////////////////////////////////////////////////////////////
 void PrintPS5(){
-    Serial.print("\n[ ");
+    // Serial.print("\n[ ");
     // Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d, OB: %.1d", 
     // Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,
     // Transmitted_Data.RightButton, Transmitted_Data.LeftButton, ButtonState);
-    Serial.printf("PR: %.6f, IR: %.6f, DR: %.6f, PA: %.6f, IA: %.6f, DA: %.6f", 
+    Serial.printf("\n[PR: %.5f, IR: %.5f, DR: %.5f, PA: %.5f, IA: %.5f, DA: %.5f, Throttle: %3d, Voltage: %.3f", 
     Transmitted_Data.PR, Transmitted_Data.IR, Transmitted_Data.DR,
-    Transmitted_Data.PA, Transmitted_Data.IA, Transmitted_Data.DA);
+    Transmitted_Data.PA, Transmitted_Data.IA, Transmitted_Data.DA, P, VoltageValue);
     Serial.print(" ]");
 }
 
