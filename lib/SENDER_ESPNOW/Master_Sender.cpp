@@ -12,6 +12,14 @@ unsigned long time_prev = 0;
 // float PRate = 1, IRate = 1, DRate = 2; //PID gains of Rate
 // float PAngle = 3, IAngle = 4, DAngle = 5; //PID gains of Angle
 
+float PRate = 0;
+float IRate = 0;
+float DRate = 0;
+
+float PAngle = 0;
+float IAngle = 0;
+float DAngle = 0;
+
 int P;
 float KalmanAngleRoll, KalmanAnglePitch;
 float VoltageValue;
@@ -29,6 +37,14 @@ typedef struct {
     byte Y_Joystick;
     byte RightButton;
     byte LeftButton;
+
+    float PR;
+    float IR;
+    float DR;
+
+    float PA;
+    float IA;
+    float DA;
 } PS5_Data;
 
 //CREATE STRUCTURED OBJECTS
@@ -43,6 +59,52 @@ typedef struct {
 
 //CREATE STRUCTURED OBJECTS
 Sensor_Data Received_Sensor_Data;
+
+void SerialDataWrite()
+{
+  static String received_chars;
+  while (Serial.available())
+  {
+    char inChar = (char)Serial.read();
+    received_chars += inChar;
+    if (inChar == '\n')
+    {
+      switch (received_chars[0])
+      {
+        case 'p':
+            received_chars.remove(0, 1);
+            PRate = received_chars.toFloat();
+            break;
+        case 'i':
+            received_chars.remove(0, 1);
+            IRate = received_chars.toFloat();
+            break;
+        case 'd':
+            received_chars.remove(0, 1);
+            DRate = received_chars.toFloat();
+            break;
+        case 'x':
+            received_chars.remove(0, 1);
+            PAngle = received_chars.toFloat();
+            break;
+        case 'y':
+            received_chars.remove(0, 1);
+            IAngle = received_chars.toFloat();
+            break;
+        case 'z':
+            received_chars.remove(0, 1);
+            DAngle = received_chars.toFloat();
+            break;
+        // case 's':
+        //   received_chars.remove(0, 1);
+        //   float anglex_setpoint = received_chars.toFloat();
+        default:
+          break;
+      }
+      received_chars = "";
+    }
+  }
+}
 
 
 ///////////////////////////////////////////////////////////////////
@@ -142,6 +204,14 @@ void SendingPS5Data_Through_ESPNOW()
     Transmitted_Data.RightButton = digitalRead(RightButton_Pin);
     Transmitted_Data.LeftButton = digitalRead(LeftButton_Pin);
 
+    Transmitted_Data.PR = PRate;
+    Transmitted_Data.IR = IRate;
+    Transmitted_Data.DR = DRate;
+
+    Transmitted_Data.PA = PAngle;
+    Transmitted_Data.IA = IAngle;
+    Transmitted_Data.DA = DAngle;
+
     P = Transmitted_Data.Potentionmeter_PWM;
 
     esp_err_t myResult = esp_now_send(SlaveMacAddress, (uint8_t *) &Transmitted_Data, sizeof(Transmitted_Data));
@@ -152,9 +222,12 @@ void SendingPS5Data_Through_ESPNOW()
 ///////////////////////////////////////////////////////////////////
 void PrintPS5(){
     Serial.print("\n[ ");
-    Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d, OB: %.1d", 
-    Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,
-    Transmitted_Data.RightButton, Transmitted_Data.LeftButton, ButtonState);
+    // Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d, OB: %.1d", 
+    // Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,
+    // Transmitted_Data.RightButton, Transmitted_Data.LeftButton, ButtonState);
+    Serial.printf("PR: %.6f, IR: %.6f, DR: %.6f, PA: %.6f, IA: %.6f, DA: %.6f", 
+    Transmitted_Data.PR, Transmitted_Data.IR, Transmitted_Data.DR,
+    Transmitted_Data.PA, Transmitted_Data.IA, Transmitted_Data.DA);
     Serial.print(" ]");
 }
 

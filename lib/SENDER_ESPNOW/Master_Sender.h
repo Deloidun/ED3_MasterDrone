@@ -15,6 +15,7 @@ extern int P;
 extern float KalmanAngleRoll, KalmanAnglePitch;
 extern float VoltageValue;
 
+void SerialDataWrite();
 void Initialize_ESPNOW_Transmitter();
 void SendingPS5Data_Through_ESPNOW();
 void PrintPS5();

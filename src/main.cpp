@@ -10,9 +10,10 @@ void setup(){
 }
 
 void loop(){
-  voltage_sensor();
+  // voltage_sensor();
   Reading_Button();
   Switch_Case();
+  SerialDataWrite();
   SendingPS5Data_Through_ESPNOW();
   PrintPS5();
 }
