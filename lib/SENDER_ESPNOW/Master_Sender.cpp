@@ -270,7 +270,7 @@ void SendingPS5Data_Through_ESPNOW()
 {
     Controller_Button_Mode();
 
-    Transmitted_Data.Potentionmeter_PWM = map(analogRead(Potentionmeter_Pin), 0, 4095, 0, 180); //Read the pot and map the reading from [0, 4095] to [0, 180]
+    Transmitted_Data.Potentionmeter_PWM = map(analogRead(Potentionmeter_Pin), 0, 4095, 0, 120); //Read the pot and map the reading from [0, 4095] to [0, 180]
     Transmitted_Data.X_Joystick = Map_And_Adjust_Joystick_Dead_Band_Values(analogRead(X_Joystick_Pin), false);
     Transmitted_Data.Y_Joystick = Map_And_Adjust_Joystick_Dead_Band_Values(analogRead(Y_Joystick_Pin), true);
     Transmitted_Data.RightButton = digitalRead(RightButton_Pin);
