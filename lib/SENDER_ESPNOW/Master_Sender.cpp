@@ -154,17 +154,26 @@ void SerialDataWrite()
             // IRate = 0;
             // DRate = 0.02;
             
-            // PAngle = 6.4;
-            // IAngle = 5;
+            // PAngle = 5.5;
+            // IAngle = 1.56;
             // DAngle = 0;
 
-            PRate = 0.18;
+            PRate = 0.16;
             IRate = 0;
-            DRate = 0.02;
+            DRate = 0.5;
             
             PAngle = 5.5;
-            IAngle = 1.56;
+            IAngle = 0.000545;
             DAngle = 0;
+            
+            //PR = 1.5;
+            //IR = 0;
+            //DR = 0.02;
+
+            //PA = 0.6;
+            //IA = 0.5;
+            //DA = 0;
+
             break;
 
         default:
@@ -297,9 +306,9 @@ void PrintPS5(){
     // Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d, OB: %.1d", 
     // Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,
     // Transmitted_Data.RightButton, Transmitted_Data.LeftButton, ButtonState);
-    Serial.printf("\n[PR: %.5f, IR: %.5f, DR: %.5f, PA: %.5f, IA: %.5f, DA: %.5f, Throttle: %3d, Voltage: %.3f", 
+    Serial.printf("\n[PR: %.5f, IR: %.5f, DR: %.5f, PA: %.5f, IA: %.7f, DA: %.5f", 
     Transmitted_Data.PR, Transmitted_Data.IR, Transmitted_Data.DR,
-    Transmitted_Data.PA, Transmitted_Data.IA, Transmitted_Data.DA, P, VoltageValue);
+    Transmitted_Data.PA, Transmitted_Data.IA, Transmitted_Data.DA);
     Serial.print(" ]");
 }
 
