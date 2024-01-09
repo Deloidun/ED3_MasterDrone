@@ -158,12 +158,13 @@ void SerialDataWrite()
             // IAngle = 1.56;
             // DAngle = 0;
 
+            //New best
             PRate = 0.16;
             IRate = 0;
-            DRate = 0.5;
+            DRate = 1.15;
             
-            PAngle = 5.5;
-            IAngle = 0.000545;
+            PAngle = 5.0;
+            IAngle = 0.00053;
             DAngle = 0;
             
             //PR = 1.5;
