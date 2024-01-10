@@ -8,10 +8,10 @@ uint8_t SlaveMacAddress[] = {0x48, 0xE7, 0x29, 0x96, 0x77, 0x44}; //MAC address 
 uint8_t NewMasterMacAddress[] = {0x48, 0xE7, 0x29, 0x9F, 0x3F, 0x44}; //Install new MAC address to master ESP32
 
 float PRate = 0.16;
-float IRate = 0.97; //MotorInput3Compensation
-float DRate = 1.5;
+float IRate = 0.65; //MotorInput3Compensation
+float DRate = 2.45;
 
-float PAngle = 5.33;
+float PAngle = 5.4;
 float IAngle = 0.0;
 float DAngle = 0.0;
 
@@ -117,7 +117,7 @@ void SerialDataWrite()
         //     // IAngle = 0.00055;
         //     // DAngle = 0;
 
-        //     //Best of best
+        //     //Best of the best
         //     PRate = 0.16;
         //     IRate = 0.97; //Motorinput3Compensate
         //     DRate = 1.5;
@@ -135,12 +135,12 @@ void SerialDataWrite()
   }
 
     //Logic for automatically turn on and off IAngle
-    if (P < 20){ //PWM value < 20 will turn off IAngle and reset time
+    if (P < 30){ //PWM value < 20 will turn off IAngle and reset time
         StartTime = millis();
         IAngle = 0;
     }
     //PWM value > 20 and the condition of PotentionmeterFlag is false
-    else if (P > 20 && !PotentionmeterFlag){
+    else if (P > 30 && !PotentionmeterFlag){
         StartTime = millis(); //Reset timer
         PotentionmeterFlag = true; //Turn flag to true so that the condition in else if below satisfy
     }
@@ -149,7 +149,7 @@ void SerialDataWrite()
     //PotentionmeterFlag = true
     //Time larger than 5
     //IAngle = 0;
-    else if (PotentionmeterFlag && (millis() - StartTime) > 5000 && IAngle == 0){
+    else if (PotentionmeterFlag && (millis() - StartTime) > 4000 && IAngle == 0){
         IAngle = 0.00095;
     }
 }
