@@ -56,10 +56,6 @@ void Switch_Case(){
     case 2:
         DisplayThrottle();
         break;
-
-    // case 3:
-    //     DisplayControllerBattery();
-    //     break;
     }
 }
 

@@ -16,6 +16,5 @@ void loop(){
   SerialDataWrite(); //Live PID tunning function
   SendingPS5Data_Through_ESPNOW();
   PrintPID();
-
 }
 

@@ -31,6 +31,7 @@ void DisplayDroneAngle(){
 }
 
 void PercentDroneBattery(){
+    display.clearDisplay();
     display.setTextSize(3);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(1,1);
@@ -41,9 +42,7 @@ void PercentDroneBattery(){
 
 
 void DisplayDroneBattery(){
-    display.clearDisplay();
-    //Display text
-    display.setTextSize(1.7); //Normal 1:1 pixel scale
+    display.setTextSize(1.0); //Normal 1:1 pixel scale
     display.setTextColor(SSD1306_WHITE); //Draw with white text
     display.setCursor(0, 0); //Start at the top left corner
     display.print(F("DRONE'S BATTERY"));
@@ -52,7 +51,33 @@ void DisplayDroneBattery(){
 }
 
 
+// void PWM_Value(){  
+//     display.setTextSize(4);
+//     display.setTextColor(SSD1306_WHITE);
+//     display.setCursor(0, 0);
+//     display.printf("\n%.3d", P);
+//     display.display();
+// }
+
+// void PreyDisplay(){
+//     display.clearDisplay();
+//     display.printf("*");
+// }
+
+// void DisplayThrottle(){
+
+//     display.setTextSize(1);
+//     display.setTextColor(SSD1306_WHITE);
+//     display.setCursor(0, 0);
+//     display.print(F("INPUT THROTTLE"));
+//     display.display();
+//     PWM_Value();
+//     PreyDisplay();
+// }
+
+
 void PWM_Value(){
+    display.clearDisplay();
     display.setTextSize(4);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
@@ -60,9 +85,7 @@ void PWM_Value(){
     display.display();
 }
 
-
 void DisplayThrottle(){
-    display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
@@ -70,4 +93,3 @@ void DisplayThrottle(){
     display.display();
     PWM_Value();
 }
-
