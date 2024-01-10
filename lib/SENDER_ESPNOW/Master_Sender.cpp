@@ -7,13 +7,13 @@
 uint8_t SlaveMacAddress[] = {0x48, 0xE7, 0x29, 0x96, 0x77, 0x44}; //MAC address of slave ESP32
 uint8_t NewMasterMacAddress[] = {0x48, 0xE7, 0x29, 0x9F, 0x3F, 0x44}; //Install new MAC address to master ESP32
 
-float PRate;
-float IRate;
-float DRate;
+float PRate = 0.16;
+float IRate = 0.97; //MotorInput3Compensation
+float DRate = 1.5;
 
-float PAngle;
-float IAngle;
-float DAngle;
+float PAngle = 5.33;
+float IAngle = 0.0;
+float DAngle = 0.0;
 
 int P;
 float KalmanAngleRoll, KalmanAnglePitch;
@@ -107,25 +107,25 @@ void SerialDataWrite()
             PRate = IRate = DRate = PAngle = IAngle = DAngle = 0;
             break;
 
-        case 'u': //Save PID gains
-            // //New best
-            // PRate = 0.16;
-            // IRate = 0.97; //Motorinput3Compensate
-            // DRate = 1.5;
+        // case 'u': //Save PID gains
+        //     // //New best
+        //     // PRate = 0.16;
+        //     // IRate = 0.97; //Motorinput3Compensate
+        //     // DRate = 1.5;
             
-            // PAngle = 5.0;
-            // IAngle = 0.00055;
-            // DAngle = 0;
+        //     // PAngle = 5.0;
+        //     // IAngle = 0.00055;
+        //     // DAngle = 0;
 
-            //Best of best
-            PRate = 0.16;
-            IRate = 0.97; //Motorinput3Compensate
-            DRate = 1.5;
+        //     //Best of best
+        //     PRate = 0.16;
+        //     IRate = 0.97; //Motorinput3Compensate
+        //     DRate = 1.5;
             
-            PAngle = 5.33;
-            IAngle = 0.0;
-            DAngle = 0;
-            break;
+        //     PAngle = 5.33;
+        //     IAngle = 0.0;
+        //     DAngle = 0;
+        //     break;
         default:
         break;
 
@@ -133,12 +133,23 @@ void SerialDataWrite()
       received_chars = "";
     }
   }
-    if (P > 20 && !PotentionmeterFlag){
-        StartTime = millis(); //Update StartTime when P first exceeds 20
-        PotentionmeterFlag = true; //Set the flag to true
-    }
 
-    if (PotentionmeterFlag && (millis() - StartTime) > 5000 && IAngle == 0){ //then, after 5sec IAngle = 0.00095
+    //Logic for automatically turn on and off IAngle
+    if (P < 20){ //PWM value < 20 will turn off IAngle and reset time
+        StartTime = millis();
+        IAngle = 0;
+    }
+    //PWM value > 20 and the condition of PotentionmeterFlag is false
+    else if (P > 20 && !PotentionmeterFlag){
+        StartTime = millis(); //Reset timer
+        PotentionmeterFlag = true; //Turn flag to true so that the condition in else if below satisfy
+    }
+    
+    //Three conditions must be satisfied to turn on the IAngle:
+    //PotentionmeterFlag = true
+    //Time larger than 5
+    //IAngle = 0;
+    else if (PotentionmeterFlag && (millis() - StartTime) > 5000 && IAngle == 0){
         IAngle = 0.00095;
     }
 }
