@@ -116,67 +116,59 @@ void SerialDataWrite()
         //     preferences.putFloat("DAngle", DAngle);
         //     Serial.println("PID Saved");
         //     break;
-        case 'p':
+        case 'q':
             received_chars.remove(0, 1);
             PRate = received_chars.toFloat();
             break;
-        case 'i':
+        case 'w':
             received_chars.remove(0, 1);
             IRate = received_chars.toFloat();
             break;
-        case 'd':
+        case 'e':
             received_chars.remove(0, 1);
             DRate = received_chars.toFloat();
             break;
-        case 'x':
+        case 'a':
             received_chars.remove(0, 1);
             PAngle = received_chars.toFloat();
             break;
-        case 'y':
+        case 's':
             received_chars.remove(0, 1);
             IAngle = received_chars.toFloat();
             break;
-        case 'z':
+        case 'd':
             received_chars.remove(0, 1);
             DAngle = received_chars.toFloat();
             break;
 
         case 'l': //lock I gains
-            IRate = IAngle = 0;
+            IAngle = 0;
             break;
 
         case 'r':
             PRate = IRate = DRate = PAngle = IAngle = DAngle = 0;
             break;
 
-        case 's': //Save PID gains
-            // PRate = 0.18;
-            // IRate = 0;
-            // DRate = 0.02;
+        case 'u': //Save PID gains
+            // //New best
+            // PRate = 0.16;
+            // IRate = 0.97; //Motorinput3Compensate
+            // DRate = 1.5;
             
-            // PAngle = 5.5;
-            // IAngle = 1.56;
+            // PAngle = 5.0;
+            // IAngle = 0.00055;
             // DAngle = 0;
 
-            //New best
+            //Best of best
             PRate = 0.16;
-            IRate = 0;
-            DRate = 1.15;
+            IRate = 0.97; //Motorinput3Compensate
+            DRate = 1.5;
             
-            PAngle = 5.0;
-            IAngle = 0.00053;
+            PAngle = 5.33;
+            IAngle = 0.00095;
             DAngle = 0;
-            
-            //PR = 1.5;
-            //IR = 0;
-            //DR = 0.02;
-
-            //PA = 0.6;
-            //IA = 0.5;
-            //DA = 0;
 
             break;
-
         default:
         break;
       }
@@ -307,7 +299,7 @@ void PrintPS5(){
     // Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d, OB: %.1d", 
     // Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,
     // Transmitted_Data.RightButton, Transmitted_Data.LeftButton, ButtonState);
-    Serial.printf("\n[PR: %.5f, IR: %.5f, DR: %.5f, PA: %.5f, IA: %.7f, DA: %.5f", 
+    Serial.printf("\n[PR: %.5f, MT3: %.5f, DR: %.5f, PA: %.5f, IA: %.7f, DA: %.5f", 
     Transmitted_Data.PR, Transmitted_Data.IR, Transmitted_Data.DR,
     Transmitted_Data.PA, Transmitted_Data.IA, Transmitted_Data.DA);
     Serial.print(" ]");
