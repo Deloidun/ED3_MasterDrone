@@ -1,6 +1,5 @@
 #include <mySSD1306.h>
 #include <Master_Sender.h>
-#include <Voltage_Sensor.h>
 
 Adafruit_SSD1306 display (SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
@@ -41,17 +40,6 @@ void PercentDroneBattery(){
 }
 
 
-
-void PercentControllerBattery(){ 
-    display.setTextSize(3);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
-    display.printf("\n%.2f", In_Voltage);
-    display.printf("V");
-    display.display();
-}
-
-
 void DisplayDroneBattery(){
     display.clearDisplay();
     //Display text
@@ -61,18 +49,6 @@ void DisplayDroneBattery(){
     display.print(F("DRONE'S BATTERY"));
     display.display(); //Show the display buffer on the screen
     PercentDroneBattery();   
-}
-
-
-void DisplayControllerBattery(){
-    display.clearDisplay();
-    //Display text
-    display.setTextSize(1.7); //Normal 1:1 pixel scale
-    display.setTextColor(SSD1306_WHITE); //Draw with white text
-    display.setCursor(0, 0); //Start at the top left corner
-    display.print(F("CONTROLLER'S BATTERY"));
-    display.display(); //Show the display buffer on the screen
-    PercentControllerBattery();
 }
 
 

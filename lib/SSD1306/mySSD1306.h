@@ -9,7 +9,6 @@
 #define OLED_RESET -1 //-1 inidicates no reset pin
 
 void Initialize_SSD1306();
-void DisplayControllerBattery();
 void DisplayDroneBattery();
 void DisplayDroneAngle();
 void DisplayThrottle();

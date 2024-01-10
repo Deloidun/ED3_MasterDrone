@@ -1,20 +1,11 @@
 #include <Master_Sender.h>
 #include <Option_Button.h>
-#include <Preferences.h>
-
-
-Preferences preferences;
 
 ///////////////////////////////////////////////////////////////////
 //DECLARATION
 ///////////////////////////////////////////////////////////////////
 uint8_t SlaveMacAddress[] = {0x48, 0xE7, 0x29, 0x96, 0x77, 0x44}; //MAC address of slave ESP32
 uint8_t NewMasterMacAddress[] = {0x48, 0xE7, 0x29, 0x9F, 0x3F, 0x44}; //Install new MAC address to master ESP32
-
-unsigned long time_prev = 0;
-
-// float PRate = 1, IRate = 1, DRate = 2; //PID gains of Rate
-// float PAngle = 3, IAngle = 4, DAngle = 5; //PID gains of Angle
 
 float PRate;
 float IRate;
@@ -24,22 +15,6 @@ float PAngle;
 float IAngle;
 float DAngle;
 
-// float Default_PRate;
-// float Default_IRate;
-// float Default_DRate;
-
-// float Default_PAngle;
-// float Default_IAngle;
-// float Default_DAngle;
-
-// float Saved_PRate;
-// float Saved_IRate;
-// float Saved_DRate;
-// float Saved_PAngle;
-// float Saved_IAngle;
-// float Saved_DAngle;
-
-
 int P;
 float KalmanAngleRoll, KalmanAnglePitch;
 float VoltageValue;
@@ -47,6 +22,9 @@ float Timer = 0;
 
 static const char* PMK_KEY_STRING = "_A_H_L_T_T_T_ED3";
 static const char* LMK_KEY_STRING = "_SON_DINH_VU_ED3";
+
+unsigned long StartTime; //Variable to store time for tracking and unlocking I gain
+bool PotentionmeterFlag = false; //Variable to track if P has exceeded 20
 
 ///////////////////////////////////////////////////////////////////
 //CREATE STRUCT AND OBJECT
@@ -81,19 +59,13 @@ typedef struct {
 Sensor_Data Received_Sensor_Data;
 
 
-//INITIALIZE NVS
-// void Initialize_NVS(){
-//     preferences.begin("pid", false); //PID is the namespace for PID values
-//     //Load the saved PID values or set to default if not save
-//     PRate = preferences.getFloat("PRate", Default_PRate);
-//     IRate = preferences.getFloat("IRate", Default_IRate);
-//     DRate = preferences.getFloat("DRate", Default_DRate);
-//     PAngle = preferences.getFloat("PAngle", Default_PAngle);
-//     IAngle = preferences.getFloat("IAngle", Default_IAngle);
-//     DAngle = preferences.getFloat("DAngle", Default_DAngle);
-// }
+///////////////////////////////////////////////////////////////////
+//FUNCTIONS DECLARATION
+///////////////////////////////////////////////////////////////////
 
-
+void Initialize_Timer(){
+    StartTime = millis();
+}
 
 void SerialDataWrite()
 {
@@ -106,16 +78,6 @@ void SerialDataWrite()
     {
       switch (received_chars[0])
       {
-        // case 's': //Save the current PID gains
-        //     Serial.println("Saving PID gains");
-        //     preferences.putFloat("PRate", PRate);
-        //     preferences.putFloat("IRate", IRate);
-        //     preferences.putFloat("DRate", DRate);
-        //     preferences.putFloat("PAngle", PAngle);
-        //     preferences.putFloat("IAngle", IAngle);
-        //     preferences.putFloat("DAngle", DAngle);
-        //     Serial.println("PID Saved");
-        //     break;
         case 'q':
             received_chars.remove(0, 1);
             PRate = received_chars.toFloat();
@@ -141,10 +103,6 @@ void SerialDataWrite()
             DAngle = received_chars.toFloat();
             break;
 
-        case 'l': //lock I gains
-            IAngle = 0;
-            break;
-
         case 'r':
             PRate = IRate = DRate = PAngle = IAngle = DAngle = 0;
             break;
@@ -165,25 +123,27 @@ void SerialDataWrite()
             DRate = 1.5;
             
             PAngle = 5.33;
-            IAngle = 0.00095;
+            IAngle = 0.0;
             DAngle = 0;
-
             break;
         default:
         break;
+
       }
       received_chars = "";
     }
   }
+    if (P > 20 && !PotentionmeterFlag){
+        StartTime = millis(); //Update StartTime when P first exceeds 20
+        PotentionmeterFlag = true; //Set the flag to true
+    }
+
+    if (PotentionmeterFlag && (millis() - StartTime) > 5000 && IAngle == 0){ //then, after 5sec IAngle = 0.00095
+        IAngle = 0.00095;
+    }
 }
 
-void Stop_NVS(){
-    preferences.end();
-}
 
-///////////////////////////////////////////////////////////////////
-//CREATE FUNCTIONS
-///////////////////////////////////////////////////////////////////
 int Map_And_Adjust_Joystick_Dead_Band_Values(int Value, bool Reverse){
     if (Value >= 2200){
         Value = map(Value, 2200, 4095, 127, 254);
@@ -294,7 +254,7 @@ void SendingPS5Data_Through_ESPNOW()
 ///////////////////////////////////////////////////////////////////
 //PRINTING FOR DEBUGING
 ///////////////////////////////////////////////////////////////////
-void PrintPS5(){
+void PrintPID(){
     // Serial.print("\n[ ");
     // Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d, OB: %.1d", 
     // Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,

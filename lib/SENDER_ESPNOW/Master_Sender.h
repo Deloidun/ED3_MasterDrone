@@ -19,6 +19,7 @@ extern float VoltageValue;
 void SerialDataWrite();
 void Initialize_ESPNOW_Transmitter();
 void SendingPS5Data_Through_ESPNOW();
-void PrintPS5();
-void Initialize_NVS();
-void Stop_NVS();
+void PrintPID();
+void Initialize_Timer();
+
+
