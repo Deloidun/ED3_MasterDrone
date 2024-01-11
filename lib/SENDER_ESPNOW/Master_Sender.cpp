@@ -277,10 +277,3 @@ void PrintPID(){
 void MATLAB_Print(){
   Serial.println(String(KalmanAnglePitch) + " " + String(KalmanAngleRoll) + " " + String(VoltageValue) + " " + String(P) + " " + String(Transmitted_Data.X_Joystick) + " " + String( Transmitted_Data.Y_Joystick) + " " + String(Transmitted_Data.LeftButton)  + " " + String(Transmitted_Data.RightButton));
 }
-
-void Print_PS5_Value(){
-    Serial.print("\n[ ");
-    Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d", 
-    Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,
-    Transmitted_Data.RightButton, Transmitted_Data.LeftButton);
-}
