@@ -19,7 +19,9 @@ extern float VoltageValue;
 void SerialDataWrite();
 void Initialize_ESPNOW_Transmitter();
 void SendingPS5Data_Through_ESPNOW();
-void PrintPID();
+
 void Initialize_Timer();
 
-
+void PrintPID();
+void MATLAB_Print();
+void Print_PS5_Value();

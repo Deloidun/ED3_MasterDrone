@@ -135,12 +135,12 @@ void SerialDataWrite()
   }
 
     //Logic for automatically turn on and off IAngle
-    if (P < 30){ //PWM value < 20 will turn off IAngle and reset time
+    if (P < 20){ //PWM value < 20 will turn off IAngle and reset time
         StartTime = millis();
         IAngle = 0;
     }
     //PWM value > 20 and the condition of PotentionmeterFlag is false
-    else if (P > 30 && !PotentionmeterFlag){
+    else if (P > 20 && !PotentionmeterFlag){
         StartTime = millis(); //Reset timer
         PotentionmeterFlag = true; //Turn flag to true so that the condition in else if below satisfy
     }
@@ -149,7 +149,7 @@ void SerialDataWrite()
     //PotentionmeterFlag = true
     //Time larger than 5
     //IAngle = 0;
-    else if (PotentionmeterFlag && (millis() - StartTime) > 4000 && IAngle == 0){
+    else if (PotentionmeterFlag && (millis() - StartTime) > 2500 && IAngle == 0){
         IAngle = 0.00095;
     }
 }
@@ -266,10 +266,7 @@ void SendingPS5Data_Through_ESPNOW()
 //PRINTING FOR DEBUGING
 ///////////////////////////////////////////////////////////////////
 void PrintPID(){
-    // Serial.print("\n[ ");
-    // Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d, OB: %.1d", 
-    // Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,
-    // Transmitted_Data.RightButton, Transmitted_Data.LeftButton, ButtonState);
+
     Serial.printf("\n[PR: %.5f, MT3: %.5f, DR: %.5f, PA: %.5f, IA: %.7f, DA: %.5f", 
     Transmitted_Data.PR, Transmitted_Data.IR, Transmitted_Data.DR,
     Transmitted_Data.PA, Transmitted_Data.IA, Transmitted_Data.DA);
@@ -277,3 +274,13 @@ void PrintPID(){
 }
 
 
+void MATLAB_Print(){
+  Serial.println(String(KalmanAnglePitch) + " " + String(KalmanAngleRoll) + " " + String(VoltageValue) + " " + String(P) + " " + String(Transmitted_Data.X_Joystick) + " " + String( Transmitted_Data.Y_Joystick) + " " + String(Transmitted_Data.LeftButton)  + " " + String(Transmitted_Data.RightButton));
+}
+
+void Print_PS5_Value(){
+    Serial.print("\n[ ");
+    Serial.printf("PWM: %.3d, XJS: %.3d, YJS: %.3d, RB: %.1d, LB: %.1d", 
+    Transmitted_Data.Potentionmeter_PWM, Transmitted_Data.X_Joystick, Transmitted_Data.Y_Joystick,
+    Transmitted_Data.RightButton, Transmitted_Data.LeftButton);
+}
