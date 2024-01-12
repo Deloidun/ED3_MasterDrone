@@ -1,19 +1,21 @@
-#include <Arduino.h>
-#include <Master_ESP_NOW.h>
+#include <Option_Button.h>
 #include <mySSD1306.h>
+#include <Master_Sender.h>
+#include <Preferences.h>
 
-void setup()
-{
-  // Set up UART 2 for Middle ESP32
-  init_ESPNOW_Transmitter();
-  SSD1306_Setup(); //Screen setup
+void setup(){
+  Initialize_ESPNOW_Transmitter();
+  Initialize_Button();
+  Initialize_SSD1306();
+  Initialize_Timer();
 }
 
-void loop()
-{
-  SerialDataWrite();
-  // Sending UART data from Middle to Slave
-  DrawMrSonBitMap(); //Draw Mr Son
-  sendingData_throughESPNOW();
-  debug();
+void loop(){
+  Reading_Button();
+  Switch_Case();
+  SerialDataWrite(); //Live PID tunning function
+  SendingPS5Data_Through_ESPNOW();
+  // PrintPID();
+  MATLAB_Print();
 }
+
